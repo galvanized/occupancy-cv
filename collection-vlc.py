@@ -2,14 +2,15 @@ import pyxhook
 import time
 import sys
 import subprocess
-
-# 
+import os
 
 """
 collection-vlc.py
 
 Gathers webcam images from /dev/video1 and sorts them into "here" and "away" folders.
 Written for a computer vision exercise.
+
+Requires Python 3.2+.
 
 protip: use with devilspie to automatically minimize
 
@@ -18,25 +19,27 @@ TODO:
 
 """
 
-command = "exec cvlc -I dummy v4l2:///dev/video1 --video-filter scene --no-audio --scene-path capture/{} --scene-prefix {}- --scene-format png --run-time=1"
-
-
-last_press_time = 0
-last_photo_time = 0
+save_path = 'data/'
+command = "exec cvlc -I dummy v4l2:///dev/video1 --video-filter scene --no-audio --scene-path " + save_path + "{} --scene-prefix {}- --scene-format png --run-time=1"
 
 # vlc is started every n seconds
 here_photo_delay = 60*5
 away_photo_delay = 60*5
 
+run_time = 2 # how long vlc runs (2s is long enough for 1 photo)
+
 # state activation times
 here_delay = 2 # 'here' for these many seconds after an activity
 away_delay = 60*15 # 'away' after these many seconds after an activity
 
-run_time = 2 # how long vlc runs (2s is long enough for 1 photo)
 
-photo_delay = 60*2 
+
+
+
+photo_delay = away_photo_delay
 last_state = "ambiguous"
-
+last_press_time = 0
+last_photo_time = 0
 process = None
 
 def update_press_time(a):
@@ -89,6 +92,8 @@ hook.HookKeyboard()
 hook.HookMouse()
 hook.start()
 
+os.makedirs(save_path+'here', exist_ok=True)
+os.makedirs(save_path+'away', exist_ok=True)
 
 try:
 	while 1:

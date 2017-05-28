@@ -27,6 +27,13 @@ import subprocess
 import os
 import glob
 
+epochs = 10000
+batch_size = 100
+
+data_file = 'data/data.npz'
+model_dir = 'data/model/'
+model_name = 'model'
+
 FLAGS = None
 
 class ImageData():
@@ -91,7 +98,7 @@ class ImageData():
 
 def main(_):
     
-    data = ImageData('data.npz')
+    data = ImageData(data_file)
 
     # inputs : placeholder is substituted by computer
     x = tf.placeholder(tf.float32, [None, data.x_dims]) # any number of items (dimension of unknown length) with 784 px/dimensions
@@ -117,10 +124,10 @@ def main(_):
         tf.global_variables_initializer().run()
 
         # train (stochastic gradient descent - 100 at a time for frugality)
-        for _ in range(10000):
-            if _%100 == 0:
-                print(_)
-            batch_xs, batch_ys = data.get_batch(100)
+        for _ in range(epochs):
+            if _%(epochs/100) == 0:
+                print(int(_/epochs * 100), '%')
+            batch_xs, batch_ys = data.get_batch(batch_size)
             sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
         # Test trained model
@@ -129,9 +136,12 @@ def main(_):
         print(sess.run(accuracy, feed_dict={x: data.txs,
             y_: data.tys}))
 
+        '''
+        os.makedirs(model_dir, exist_ok=True)
         saver = tf.train.Saver()
-        saver.save(sess, 'model/model')
-        saver.export_meta_graph('model/model.meta')
+        saver.save(sess, model_dir+model_name)
+        saver.export_meta_graph(model_dir+model_name+'.meta')
+        '''
 
         #print(sess.run(y, feed_dict={x: [data.txs[9]]}))
         #print([data.xs[0]])
