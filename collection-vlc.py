@@ -18,19 +18,19 @@ TODO:
 
 """
 
-command = "exec cvlc -I dummy v4l2:///dev/video1 --video-filter scene --no-audio --scene-path {} --scene-prefix {}- --scene-format png --run-time=1"
+command = "exec cvlc -I dummy v4l2:///dev/video1 --video-filter scene --no-audio --scene-path capture/{} --scene-prefix {}- --scene-format png --run-time=1"
 
 
 last_press_time = 0
 last_photo_time = 0
 
 # vlc is started every n seconds
-here_photo_delay = 30
-away_photo_delay = 60*2 # away is boring, sample less
+here_photo_delay = 60*5
+away_photo_delay = 60*5
 
 # state activation times
 here_delay = 2 # 'here' for these many seconds after an activity
-away_delay = 60*20 # 'away' after these many seconds after an activity
+away_delay = 60*15 # 'away' after these many seconds after an activity
 
 run_time = 2 # how long vlc runs (2s is long enough for 1 photo)
 
